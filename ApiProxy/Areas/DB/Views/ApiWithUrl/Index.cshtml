@@ -1,0 +1,164 @@
+﻿@using ApiProxy.Areas.DB.Models
+@{
+    List<ApiKeyInfo> ApiKeyInfos = ViewBag.ApiKeyInfos;
+    List<UrlReference> UrlReferences = ViewBag.UrlReferences;
+}
+
+@section Styles {
+    <style>
+        .active {
+            background-color: #ECECEC;
+        }
+
+        #input_UserEmail {
+            width: 250px;
+        }
+
+        .div-checkbox {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .div-checkbox input[type="checkbox"] {
+                transform-origin: center;
+                transform: scale(2);
+            }
+    </style>
+}
+
+<div class="row">
+    <div class="col-5">
+        <div class="card">
+            <div class="card-header">
+                ApiKeyInfo
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 45%">UserEmail</th>
+                            <th style="width: 45%">ApiKey</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ApiKeyInfos">
+                        @foreach( ApiKeyInfo item in ApiKeyInfos )
+                        {
+                            <tr>
+                                <td class="UserEmail" style="width: 45%">@item.UserEmail</td>
+                                <td style="width: 45%">@item.ApiKey</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-7">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-auto align-self-center">UrlReference</div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary float-right" onclick="UpdateApiWithUrl()">確認</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 10%;"></th>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 40%;">FromUrl</th>
+                            <th style="width: 40%;">ToUrl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="UrlReferences">
+                        @foreach( UrlReference item in UrlReferences )
+                        {
+                            <tr>
+                                <td style="width: 10%; padding: 0; height: 1px;">
+                                    <div class="div-checkbox">
+                                        <input type="checkbox" class="UrlReference_check" urlID="@item.ID">
+                                    </div>
+                                </td>
+                                <td class="ID" style="width: 10%;">@item.ID</td>
+                                <td style="width: 40%;">@item.FromUrl</td>
+                                <td style="width: 40%;">@item.ToUrl</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        window.onload = function () {
+            document.querySelectorAll( '#ApiKeyInfos tr' ).forEach( el => {
+                el.onclick = function () {
+                    let pre = document.querySelector( '#ApiKeyInfos tr.active' );
+                    if( pre != null && pre != el ) {
+                        pre.classList.remove( 'active' );
+                    }
+                    el.classList.add( 'active' );
+
+                    let userEmail = el.querySelector( 'td.UserEmail' ).textContent;
+                    GetApiWithUrl( userEmail );
+                }
+            } );
+        };
+
+        function GetApiWithUrl( userEmail ) {
+            fetch( '@Url.Action("GetApiWithUrl","ApiWithUrl")', {
+                method: 'POST',
+                body: userEmail
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                if( result != null ) {
+                    if( result.Result != undefined ) ShowStatusDialog( result );
+                    else {
+                        document.querySelectorAll( 'div.div-checkbox input.UrlReference_check' ).forEach( el => {
+                            let urlID = parseInt( el.getAttribute( 'urlID' ) );
+                            el.checked = result.find( r => r == urlID ) != null;
+                        } );
+                    }
+                }
+            } );
+        }
+
+        function UpdateApiWithUrl() {
+            let list_ApiWithUrl = [];
+            let UserEmail = document.querySelector( '#ApiKeyInfos tr.active td.UserEmail' ).textContent;
+            document.querySelectorAll( 'div.div-checkbox input.UrlReference_check' ).forEach( el => {
+                let UrlReferenceID = parseInt( el.getAttribute( 'urlID' ) );
+                if( el.checked ) list_ApiWithUrl.push( { UserEmail, UrlReferenceID  } );
+            } );
+            fetch( '@Url.Action("UpdateApiWithUrl","ApiWithUrl")', {
+                method: 'POST',
+                body: JSON.stringify(list_ApiWithUrl)
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function ShowStatusDialog( result ) {
+            Swal.fire( {
+                icon: result.Result ? 'success' : 'error',
+                text: result.Message,
+                position: result.Result ? 'top-end' : 'center',
+                timer: result.Result ? '2000' : undefined,
+                showConfirmButton: !result.Result,
+                backdrop: !result.Result,
+            } );
+        }
+    </script>
+}

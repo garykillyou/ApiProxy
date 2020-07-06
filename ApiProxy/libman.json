@@ -1,0 +1,92 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootstrap@4.5.0",
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "dist/js/bootstrap.bundle.js",
+        "dist/js/bootstrap.bundle.js.map",
+        "dist/js/bootstrap.bundle.min.js",
+        "dist/js/bootstrap.bundle.min.js.map",
+        "dist/css/bootstrap.css",
+        "dist/css/bootstrap.css.map",
+        "dist/css/bootstrap.min.css",
+        "dist/css/bootstrap.min.css.map"
+      ]
+    },
+    {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "dist/jquery.js",
+        "dist/jquery.min.js",
+        "dist/jquery.min.map"
+      ]
+    },
+    {
+      "library": "jquery-validation@1.19.2",
+      "destination": "wwwroot/lib/jquery-validation/",
+      "files": [
+        "dist/jquery.validate.js",
+        "dist/jquery.validate.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
+      "files": [
+        "dist/jquery.validate.unobtrusive.js",
+        "dist/jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "sweetalert2@9.15.2",
+      "destination": "wwwroot/lib/sweetalert2/",
+      "files": [
+        "sweetalert2.d.ts",
+        "dist/sweetalert2.all.js",
+        "dist/sweetalert2.all.min.js",
+        "dist/sweetalert2.css",
+        "dist/sweetalert2.min.css"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "font-awesome@5.13.1",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.css",
+        "css/all.min.css",
+        "css/brands.css",
+        "css/brands.min.css",
+        "css/fontawesome.css",
+        "css/fontawesome.min.css",
+        "css/regular.css",
+        "css/regular.min.css",
+        "css/solid.css",
+        "css/solid.min.css",
+        "css/svg-with-js.css",
+        "css/svg-with-js.min.css",
+        "css/v4-shims.css",
+        "css/v4-shims.min.css",
+        "webfonts/fa-brands-400.eot",
+        "webfonts/fa-brands-400.svg",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.eot",
+        "webfonts/fa-regular-400.svg",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.eot",
+        "webfonts/fa-solid-900.svg",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff",
+        "webfonts/fa-solid-900.woff2"
+      ]
+    }
+  ]
+}
