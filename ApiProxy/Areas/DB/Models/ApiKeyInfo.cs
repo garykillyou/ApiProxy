@@ -12,4 +12,10 @@ namespace ApiProxy.Areas.DB.Models
 
         public List<ApiWithUrl> ApiWithUrls { get; set; }
     }
+
+    public class AskApiKey
+    {
+        [Key]
+        public string UserEmail { get; set; }
+    }
 }

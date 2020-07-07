@@ -20,6 +20,8 @@ namespace ApiProxy.Data
 
         public DbSet<ApiWithUrl> ApiWithUrls { get; set; }
 
+        public DbSet<AskApiKey> AskApiKeys { get; set; }
+
         protected override void OnModelCreating( ModelBuilder builder )
         {
             base.OnModelCreating( builder );
