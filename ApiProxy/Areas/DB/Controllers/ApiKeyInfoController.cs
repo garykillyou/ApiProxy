@@ -31,8 +31,9 @@ namespace ApiProxy.Areas.DB.Controllers
         // GET: DB/ApiKeyInfo
         public ActionResult Index()
         {
-            var data = _apiProxyContext.ApiKeyInfos.AsNoTracking().OrderBy( a => a.UserEmail ).ToList();
-            return View( data );
+            var Model = _apiProxyContext.ApiKeyInfos.AsNoTracking().OrderBy( a => a.UserEmail ).ToList();
+            ViewBag.AskApiKeys = _apiProxyContext.AskApiKeys.AsNoTracking().ToList();
+            return View( Model );
         }
 
         [AllowAnonymous]
@@ -89,6 +90,59 @@ namespace ApiProxy.Areas.DB.Controllers
             catch( Exception ex )
             {
                 _logger.LogError( "ERROR", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+            }
+        }
+
+        // POST: DB/ApiKeyInfo/AcceptAskApiKey
+        [HttpPost]
+        public async Task<IActionResult> AcceptAskApiKey()
+        {
+            try
+            {
+                string requestData = await Request.GetRawBodyStringAsync( Encoding.UTF8 );
+                List<AskApiKey> askApiKeys = JsonSerializer.Deserialize<List<AskApiKey>>( requestData );
+
+                List<ApiKeyInfo> apiKeyInfos = new List<ApiKeyInfo>();
+                askApiKeys.ForEach( u =>
+                {
+                    apiKeyInfos.Add( new ApiKeyInfo
+                    {
+                        UserEmail = u.UserEmail,
+                        ApiKey = ApiProxyContext.CreateKey()
+                    } );
+                } );
+                _apiProxyContext.ApiKeyInfos.AddRange( apiKeyInfos );
+
+                _apiProxyContext.AskApiKeys.RemoveRange( askApiKeys );
+                await _apiProxyContext.SaveChangesAsync();
+
+                return Ok( new Status { Result = true, Message = "AcceptAskApiKey 成功" } );
+            }
+            catch( Exception ex )
+            {
+                _logger.LogError( "AcceptAskApiKey()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+            }
+        }
+
+        // POST: DB/ApiKeyInfo/RefuseAskApiKey
+        [HttpPost]
+        public async Task<IActionResult> RefuseAskApiKey()
+        {
+            try
+            {
+                string requestData = await Request.GetRawBodyStringAsync( Encoding.UTF8 );
+                List<AskApiKey> askApiKeys = JsonSerializer.Deserialize<List<AskApiKey>>( requestData );
+
+                _apiProxyContext.AskApiKeys.RemoveRange( askApiKeys );
+                await _apiProxyContext.SaveChangesAsync();
+
+                return Ok( new Status { Result = true, Message = "RefuseAskApiKey 成功" } );
+            }
+            catch( Exception ex )
+            {
+                _logger.LogError( "RefuseAskApiKey()", ex );
                 return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
             }
         }

@@ -32,9 +32,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        @inject SignInManager<ApiProxyUser> SignInManager
-                        @if( SignInManager.IsSignedIn(User) )
+                        @if( User.Identity.IsAuthenticated )
                         {
+                            if( User.Identity.IsAuthenticated && User.IsInRole( "Admin" ) )
+                            {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="DB" asp-controller="ApiKeyInfo">ApiKeyInfo</a>
                             </li>
@@ -44,6 +45,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="DB" asp-controller="ApiWithUrl">ApiWithUrl</a>
                             </li>
+                            }
+                            else
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="DB" asp-controller="MyApiWithUrl">My ApiWithUrl</a>
+                            </li>
+                            }
                         }
                     </ul>
                 </div>

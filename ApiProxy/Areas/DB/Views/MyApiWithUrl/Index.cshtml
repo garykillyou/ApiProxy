@@ -1,0 +1,227 @@
+﻿@using ApiProxy.Areas.DB.Models
+@{
+    string Email = ViewBag.Email;
+    ApiKeyInfo ApiKeyInfo = ViewBag.ApiKeyInfo;
+    List<UrlReference> UrlReferences = ViewBag.UrlReferences;
+}
+
+@section Styles {
+    <style>
+        .active {
+            background-color: #ECECEC;
+        }
+
+        #input_UserEmail {
+            width: 250px;
+        }
+
+        .div-checkbox {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .div-checkbox input[type="checkbox"] {
+                transform-origin: center;
+                transform: scale(2);
+            }
+    </style>
+}
+
+<div class="row">
+    <div class="col-5">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-auto align-self-center">ApiKeyInfo</div>
+                    @if( ApiKeyInfo == null )
+                    {
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="AskApiKey()">請求金鑰</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 50%">UserEmail</th>
+                            <th style="width: 50%">ApiKey</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ApiKeyInfo">
+                        @if( ApiKeyInfo != null )
+                        {
+                            <tr>
+                                <td id="UserEmail" style="width: 50%;">@ApiKeyInfo.UserEmail</td>
+                                <td style="width: 50%;">@ApiKeyInfo.ApiKey</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-7">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-auto align-self-center">UrlReference</div>
+                    @if( ApiKeyInfo != null )
+                    {
+                        <div class="col-auto">
+                            <div class="row no-gutters">
+                                <div class="col-auto mr-1">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="input_FromUrl" placeholder="FromUrl" />
+                                        <div class="mx-1" style="display: inline-flex; align-items: center;">
+                                            <i class="fas fa-arrow-right fa-lg"></i>
+                                        </div>
+                                        <input type="text" class="form-control" id="input_ToUrl" placeholder="ToUrl" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" onclick="AddUrlReference()">新增</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-auto"><button class="btn btn-danger" onclick="RemoveUrlReference()">刪除</button></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 45%;">FromUrl</th>
+                            <th style="width: 45%;">ToUrl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="UrlReferences">
+                        @if( UrlReferences != null )
+                        {
+                            foreach( UrlReference item in UrlReferences )
+                            {
+                                <tr>
+                                    <td class="ID" style="width: 10%;">@item.ID</td>
+                                    <td style="width: 45%;">@item.FromUrl</td>
+                                    <td style="width: 45%;">@item.ToUrl</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        window.onload = function () {
+            document.querySelectorAll( '#ApiKeyInfos tr' ).forEach( el => {
+                el.onclick = function () {
+                    let pre = document.querySelector( '#ApiKeyInfos tr.active' );
+                    if( pre != null && pre != el ) {
+                        pre.classList.remove( 'active' );
+                    }
+                    el.classList.add( 'active' );
+
+                    let userEmail = el.querySelector( 'td.UserEmail' ).textContent;
+                    GetApiWithUrl( userEmail );
+                }
+            } );
+        };
+
+        function AskApiKey() {
+            let data = { UserEmail: '@Email' };
+
+            fetch( '@Url.Action( "AskApiKey", "MyApiWithUrl" )', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( data )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function AddUrlReference() {
+            let input_FromUrl = document.getElementById( 'input_FromUrl' ).value;
+            let input_ToUrl = document.getElementById( 'input_ToUrl' ).value;
+            if( input_FromUrl == '' || input_ToUrl == '' )
+                return Swal.fire( {
+                    icon: 'warning',
+                    text: '請輸入想要新增的FromUrl和ToUrl'
+                } );
+
+            let data = {
+                UserEmail: document.getElementById( 'UserEmail' ).textContent,
+                UrlReference: {
+                    FromUrl: input_FromUrl,
+                    ToUrl: input_ToUrl
+                }
+            };
+
+            fetch( '@Url.Action("AddUrlReference", "MyApiWithUrl" )', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( data )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function RemoveUrlReference() {
+            let userEmail = document.querySelectorAll( '#UrlReferences tr.active td.ID' );
+            if( userEmail === null )
+                return Swal.fire( {
+                    icon: 'warning',
+                    text: '請先選擇想要刪除的UrlReference'
+                } );
+
+            let list_ID = []
+
+            userEmail.forEach( el => {
+                list_ID.push( parseInt( el.textContent ) );
+            } );
+
+            fetch( '@Url.Action("RemoveUrlReference","UrlReference")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( list_ID )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function ShowStatusDialog( result ) {
+            Swal.fire( {
+                icon: result.Result ? 'success' : 'error',
+                text: result.Message,
+                position: result.Result ? 'top-end' : 'center',
+                timer: result.Result ? '2000' : undefined,
+                showConfirmButton: !result.Result,
+                backdrop: !result.Result,
+            } );
+        }
+    </script>
+}
