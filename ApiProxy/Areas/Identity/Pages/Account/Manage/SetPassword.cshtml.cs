@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using ApiProxy.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +14,7 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public SetPasswordModel(
             UserManager<ApiProxyUser> userManager,
-            SignInManager<ApiProxyUser> signInManager)
+            SignInManager<ApiProxyUser> signInManager )
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -32,30 +29,30 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [StringLength( 100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6 )]
+            [DataType( DataType.Password )]
+            [Display( Name = "New password" )]
             public string NewPassword { get; set; }
 
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [DataType( DataType.Password )]
+            [Display( Name = "Confirm new password" )]
+            [Compare( "NewPassword", ErrorMessage = "The new password and confirmation password do not match." )]
             public string ConfirmPassword { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            var hasPassword = await _userManager.HasPasswordAsync( user );
 
-            if (hasPassword)
+            if( hasPassword )
             {
-                return RedirectToPage("./ChangePassword");
+                return RedirectToPage( "./ChangePassword" );
             }
 
             return Page();
@@ -63,28 +60,28 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if( !ModelState.IsValid )
             {
                 return Page();
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
-            var addPasswordResult = await _userManager.AddPasswordAsync(user, Input.NewPassword);
-            if (!addPasswordResult.Succeeded)
+            var addPasswordResult = await _userManager.AddPasswordAsync( user, Input.NewPassword );
+            if( !addPasswordResult.Succeeded )
             {
-                foreach (var error in addPasswordResult.Errors)
+                foreach( var error in addPasswordResult.Errors )
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError( string.Empty, error.Description );
                 }
                 return Page();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync( user );
             StatusMessage = "Your password has been set.";
 
             return RedirectToPage();

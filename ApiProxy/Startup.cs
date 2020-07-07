@@ -27,7 +27,7 @@ namespace ApiProxy
             services.AddDbContext<ApiProxyContext>( options =>
                 options.UseMySql( Configuration.GetConnectionString( "ApiProxyContextConnection" ) ) );
 
-            services.AddDefaultIdentity<ApiProxyUser>( opts =>
+            services.AddIdentity<ApiProxyUser, IdentityRole>( opts =>
             {
                 // 密碼規則
                 opts.Password.RequiredLength = 4;
@@ -37,7 +37,8 @@ namespace ApiProxy
                 opts.Password.RequireLowercase = false;
             } )
             .AddEntityFrameworkStores<ApiProxyContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddDefaultUI();
 
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
@@ -87,7 +88,7 @@ namespace ApiProxy
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints( endpoints =>
              {
                  endpoints.MapControllerRoute( "default", "{area:exists}/{controller=Home}/{action=Index}/{id?}" );

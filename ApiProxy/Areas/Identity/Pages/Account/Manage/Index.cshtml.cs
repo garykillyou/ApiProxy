@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using ApiProxy.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +14,7 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public IndexModel(
             UserManager<ApiProxyUser> userManager,
-            SignInManager<ApiProxyUser> signInManager)
+            SignInManager<ApiProxyUser> signInManager )
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,14 +31,14 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display( Name = "Phone number" )]
             public string PhoneNumber { get; set; }
         }
 
-        private async Task LoadAsync(ApiProxyUser user)
+        private async Task LoadAsync( ApiProxyUser user )
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var userName = await _userManager.GetUserNameAsync( user );
+            var phoneNumber = await _userManager.GetPhoneNumberAsync( user );
 
             Username = userName;
 
@@ -53,42 +50,42 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
-            await LoadAsync(user);
+            await LoadAsync( user );
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
-            if (!ModelState.IsValid)
+            if( !ModelState.IsValid )
             {
-                await LoadAsync(user);
+                await LoadAsync( user );
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            var phoneNumber = await _userManager.GetPhoneNumberAsync( user );
+            if( Input.PhoneNumber != phoneNumber )
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                var setPhoneResult = await _userManager.SetPhoneNumberAsync( user, Input.PhoneNumber );
+                if( !setPhoneResult.Succeeded )
                 {
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
+                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
                 }
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync( user );
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }

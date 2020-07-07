@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using ApiProxy.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +15,7 @@ namespace ApiProxy.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApiProxyUser> _userManager;
 
-        public ResetPasswordModel(UserManager<ApiProxyUser> userManager)
+        public ResetPasswordModel( UserManager<ApiProxyUser> userManager )
         {
             _userManager = userManager;
         }
@@ -33,29 +30,29 @@ namespace ApiProxy.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
+            [StringLength( 100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6 )]
+            [DataType( DataType.Password )]
             public string Password { get; set; }
 
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [DataType( DataType.Password )]
+            [Display( Name = "Confirm password" )]
+            [Compare( "Password", ErrorMessage = "The password and confirmation password do not match." )]
             public string ConfirmPassword { get; set; }
 
             public string Code { get; set; }
         }
 
-        public IActionResult OnGet(string code = null)
+        public IActionResult OnGet( string code = null )
         {
-            if (code == null)
+            if( code == null )
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest( "A code must be supplied for password reset." );
             }
             else
             {
                 Input = new InputModel
                 {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    Code = Encoding.UTF8.GetString( WebEncoders.Base64UrlDecode( code ) )
                 };
                 return Page();
             }
@@ -63,27 +60,27 @@ namespace ApiProxy.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if( !ModelState.IsValid )
             {
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
-            if (user == null)
+            var user = await _userManager.FindByEmailAsync( Input.Email );
+            if( user == null )
             {
                 // Don't reveal that the user does not exist
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage( "./ResetPasswordConfirmation" );
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
-            if (result.Succeeded)
+            var result = await _userManager.ResetPasswordAsync( user, Input.Code, Input.Password );
+            if( result.Succeeded )
             {
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage( "./ResetPasswordConfirmation" );
             }
 
-            foreach (var error in result.Errors)
+            foreach( var error in result.Errors )
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError( string.Empty, error.Description );
             }
             return Page();
         }

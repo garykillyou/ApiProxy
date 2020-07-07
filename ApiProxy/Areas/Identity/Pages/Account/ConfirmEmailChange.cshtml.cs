@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using ApiProxy.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +15,7 @@ namespace ApiProxy.Areas.Identity.Pages.Account
         private readonly UserManager<ApiProxyUser> _userManager;
         private readonly SignInManager<ApiProxyUser> _signInManager;
 
-        public ConfirmEmailChangeModel(UserManager<ApiProxyUser> userManager, SignInManager<ApiProxyUser> signInManager)
+        public ConfirmEmailChangeModel( UserManager<ApiProxyUser> userManager, SignInManager<ApiProxyUser> signInManager )
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -27,22 +24,22 @@ namespace ApiProxy.Areas.Identity.Pages.Account
         [TempData]
         public string StatusMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
+        public async Task<IActionResult> OnGetAsync( string userId, string email, string code )
         {
-            if (userId == null || email == null || code == null)
+            if( userId == null || email == null || code == null )
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage( "/Index" );
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            var user = await _userManager.FindByIdAsync( userId );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{userId}'.");
+                return NotFound( $"Unable to load user with ID '{userId}'." );
             }
 
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ChangeEmailAsync(user, email, code);
-            if (!result.Succeeded)
+            code = Encoding.UTF8.GetString( WebEncoders.Base64UrlDecode( code ) );
+            var result = await _userManager.ChangeEmailAsync( user, email, code );
+            if( !result.Succeeded )
             {
                 StatusMessage = "Error changing email.";
                 return Page();
@@ -50,14 +47,14 @@ namespace ApiProxy.Areas.Identity.Pages.Account
 
             // In our UI email and user name are one and the same, so when we update the email
             // we need to update the user name.
-            var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
-            if (!setUserNameResult.Succeeded)
+            var setUserNameResult = await _userManager.SetUserNameAsync( user, email );
+            if( !setUserNameResult.Succeeded )
             {
                 StatusMessage = "Error changing user name.";
                 return Page();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync( user );
             StatusMessage = "Thank you for confirming your email change.";
             return Page();
         }

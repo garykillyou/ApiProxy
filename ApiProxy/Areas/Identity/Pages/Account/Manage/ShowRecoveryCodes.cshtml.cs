@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ApiProxy.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
 namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 {
@@ -20,9 +13,9 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public IActionResult OnGet()
         {
-            if (RecoveryCodes == null || RecoveryCodes.Length == 0)
+            if( RecoveryCodes == null || RecoveryCodes.Length == 0 )
             {
-                return RedirectToPage("./TwoFactorAuthentication");
+                return RedirectToPage( "./TwoFactorAuthentication" );
             }
 
             return Page();

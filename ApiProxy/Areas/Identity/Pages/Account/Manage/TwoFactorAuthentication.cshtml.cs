@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ApiProxy.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +18,7 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
         public TwoFactorAuthenticationModel(
             UserManager<ApiProxyUser> userManager,
             SignInManager<ApiProxyUser> signInManager,
-            ILogger<TwoFactorAuthenticationModel> logger)
+            ILogger<TwoFactorAuthenticationModel> logger )
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -42,26 +39,26 @@ namespace ApiProxy.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGet()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
-            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
-            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
-            IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user);
-            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
+            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync( user ) != null;
+            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync( user );
+            IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync( user );
+            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync( user );
 
             return Page();
         }
 
         public async Task<IActionResult> OnPost()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var user = await _userManager.GetUserAsync( User );
+            if( user == null )
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound( $"Unable to load user with ID '{_userManager.GetUserId( User )}'." );
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
