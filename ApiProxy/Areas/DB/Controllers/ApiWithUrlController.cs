@@ -47,8 +47,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                _logger.LogError( "Test()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -69,8 +69,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex?.InnerException.Message } );
+                _logger.LogError( "GetApiWithUrl()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -95,8 +95,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex?.InnerException.Message } );
+                _logger.LogError( "UpdateApiWithUrl()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
     }

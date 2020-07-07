@@ -48,8 +48,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                _logger.LogError( "Test()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -66,8 +66,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                _logger.LogError( "AddApiKeyInfo( [FromBody] ApiKeyInfo apiKeyInfo )", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -89,7 +89,7 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
+                _logger.LogError( "RemoveApiKeyInfo()", ex );
                 return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
             }
         }
@@ -122,7 +122,7 @@ namespace ApiProxy.Areas.DB.Controllers
             catch( Exception ex )
             {
                 _logger.LogError( "AcceptAskApiKey()", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -143,7 +143,7 @@ namespace ApiProxy.Areas.DB.Controllers
             catch( Exception ex )
             {
                 _logger.LogError( "RefuseAskApiKey()", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
     }

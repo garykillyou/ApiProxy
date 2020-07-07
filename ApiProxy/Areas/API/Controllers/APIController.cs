@@ -60,8 +60,8 @@ namespace ApiProxy.Areas.API.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                _logger.LogError( "Post()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 

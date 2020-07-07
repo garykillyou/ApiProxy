@@ -45,8 +45,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex.InnerException.Message } );
+                _logger.LogError( "Test()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -65,8 +65,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex?.InnerException.Message } );
+                _logger.LogError( "AddUrlReference( [FromBody] UrlReference urlReference )", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
 
@@ -88,8 +88,8 @@ namespace ApiProxy.Areas.DB.Controllers
             }
             catch( Exception ex )
             {
-                _logger.LogError( "ERROR", ex );
-                return BadRequest( new Status { Result = false, Message = ex?.InnerException.Message } );
+                _logger.LogError( "RemoveUrlReference()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
             }
         }
     }
