@@ -32,12 +32,13 @@ namespace ApiProxy.Services
                 }
 
                 var _userManager = serviceScope.ServiceProvider.GetService<UserManager<ApiProxyUser>>();
-                var admin = await _userManager.FindByEmailAsync( "admin@apiproxy.com" );
+                ApiProxyUser admin = await _userManager.FindByEmailAsync( "admin@apiproxy.com" );
                 if( admin == null )
                 {
                     var user = new ApiProxyUser { UserName = "admin", Email = "admin@apiproxy.com" };
                     await _userManager.CreateAsync( user, "admin" );
                     user.EmailConfirmed = true;
+                    admin = user;
                     _logger.LogInformation( $"Admin Account Not Found, Add Admin Account admin@apiproxy.com" );
                 }
 

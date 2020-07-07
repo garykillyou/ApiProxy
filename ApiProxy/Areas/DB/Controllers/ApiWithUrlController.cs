@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace ApiProxy.Areas.DB.Controllers
 {
     [Area( "DB" )]
-    [Authorize]
+    [Authorize( Roles = "Admin" )]
     public class ApiWithUrlController : Controller
     {
         private readonly ApiProxyContext _apiProxyContext;
