@@ -23,24 +23,37 @@ namespace ApiProxy.Services
         {
             try
             {
-                var _userManager = serviceScope.ServiceProvider.GetService<UserManager<ApiProxyUser>>();
-                var txadmin = await _userManager.FindByEmailAsync( "admin@apiproxy.com" );
-                if( txadmin == null )
+                var _roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+                bool roleAdminExist = await _roleManager.RoleExistsAsync( "Admin" );
+                if( !roleAdminExist )
                 {
-                    _logger.LogInformation( $"Admin Account Not Found, Add Admin Account admin@apiproxy.com" );
+                    await _roleManager.CreateAsync( new IdentityRole( "Admin" ) );
+                    _logger.LogInformation( $"Role Admin Not Found, Add Role Admin" );
+                }
+
+                var _userManager = serviceScope.ServiceProvider.GetService<UserManager<ApiProxyUser>>();
+                var admin = await _userManager.FindByEmailAsync( "admin@apiproxy.com" );
+                if( admin == null )
+                {
                     var user = new ApiProxyUser { UserName = "admin", Email = "admin@apiproxy.com" };
                     await _userManager.CreateAsync( user, "admin" );
                     user.EmailConfirmed = true;
+                    _logger.LogInformation( $"Admin Account Not Found, Add Admin Account admin@apiproxy.com" );
+                }
+
+                if( !await _userManager.IsInRoleAsync( admin, "Admin" ) )
+                {
+                    await _userManager.AddToRoleAsync( admin, "Admin" );
+                    _logger.LogInformation( $"Admin Account Add To Role Admin" );
                 }
 
                 return true;
             }
-            catch( Exception ex)
+            catch( Exception ex )
             {
                 _logger.LogError( $"CheckAdmin() ERROR : {ex.Message}" );
                 return false;
             }
-            
         }
 
         public async Task Execute()
