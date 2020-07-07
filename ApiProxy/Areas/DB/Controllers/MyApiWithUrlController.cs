@@ -40,7 +40,7 @@ namespace ApiProxy.Areas.DB.Controllers
             ViewBag.Email = user.Email;
 
             ApiKeyInfo ApiKeyInfo = _apiProxyContext.ApiKeyInfos.AsNoTracking().Include( a => a.ApiWithUrls )
-                .SingleOrDefault( a => a.UserEmail == user.Email );
+                .ThenInclude( au => au.UrlReference ).SingleOrDefault( a => a.UserEmail == user.Email );
             ViewBag.ApiKeyInfo = ApiKeyInfo;
 
             ViewBag.UrlReferences = ApiKeyInfo?.ApiWithUrls.Select( a => a.UrlReference ).OrderBy( u => u.ID ).ToList();
@@ -95,6 +95,10 @@ namespace ApiProxy.Areas.DB.Controllers
             {
                 if( string.IsNullOrEmpty( apiWithUrl.UrlReference.FromUrl ) || string.IsNullOrEmpty( apiWithUrl.UrlReference.ToUrl ) )
                     return BadRequest( new Status { Result = false, Message = "網址沒有值" } );
+
+                UrlReference urlReference = _apiProxyContext.UrlReferences.FirstOrDefault( u => u.FromUrl.ToLower() == apiWithUrl.UrlReference.FromUrl.ToLower() );
+                if( urlReference != null )
+                    return BadRequest( new Status { Result = false, Message = "FromUrl 重複" } );
 
                 _apiProxyContext.ApiWithUrls.Add( apiWithUrl );
                 await _apiProxyContext.SaveChangesAsync();

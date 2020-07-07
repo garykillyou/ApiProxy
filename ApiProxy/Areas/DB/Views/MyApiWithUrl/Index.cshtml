@@ -11,10 +11,6 @@
             background-color: #ECECEC;
         }
 
-        #input_UserEmail {
-            width: 250px;
-        }
-
         .div-checkbox {
             width: 100%;
             height: 100%;
@@ -27,6 +23,10 @@
                 transform-origin: center;
                 transform: scale(2);
             }
+
+        #input_FromUrl, #input_ToUrl {
+            width: 370px;
+        }
     </style>
 }
 
@@ -97,7 +97,7 @@
                     <thead class="thead-dark">
                         <tr>
                             <th style="width: 10%;">ID</th>
-                            <th style="width: 45%;">FromUrl</th>
+                            <th style="width: 45%;">FromUrl（不區分大小寫）</th>
                             <th style="width: 45%;">ToUrl</th>
                         </tr>
                     </thead>
@@ -123,16 +123,9 @@
 @section Scripts{
     <script>
         window.onload = function () {
-            document.querySelectorAll( '#ApiKeyInfos tr' ).forEach( el => {
+            document.querySelectorAll( '#UrlReferences tr' ).forEach( el => {
                 el.onclick = function () {
-                    let pre = document.querySelector( '#ApiKeyInfos tr.active' );
-                    if( pre != null && pre != el ) {
-                        pre.classList.remove( 'active' );
-                    }
-                    el.classList.add( 'active' );
-
-                    let userEmail = el.querySelector( 'td.UserEmail' ).textContent;
-                    GetApiWithUrl( userEmail );
+                    el.classList.toggle( 'active' );
                 }
             } );
         };
@@ -181,13 +174,13 @@
             } ).then( response => {
                 return response.json();
             } ).then( result => {
-                ShowStatusDialog( result );
+                ShowStatusDialog( result, true );
             } );
         }
 
         function RemoveUrlReference() {
             let userEmail = document.querySelectorAll( '#UrlReferences tr.active td.ID' );
-            if( userEmail === null )
+            if( userEmail.length === 0 )
                 return Swal.fire( {
                     icon: 'warning',
                     text: '請先選擇想要刪除的UrlReference'
@@ -199,7 +192,7 @@
                 list_ID.push( parseInt( el.textContent ) );
             } );
 
-            fetch( '@Url.Action("RemoveUrlReference","UrlReference")', {
+            fetch( '@Url.Action("RemoveUrlReference", "MyApiWithUrl" )', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -209,11 +202,11 @@
             } ).then( response => {
                 return response.json();
             } ).then( result => {
-                ShowStatusDialog( result );
+                ShowStatusDialog( result, true );
             } );
         }
 
-        function ShowStatusDialog( result ) {
+        function ShowStatusDialog( result, reload = false ) {
             Swal.fire( {
                 icon: result.Result ? 'success' : 'error',
                 text: result.Message,
@@ -221,6 +214,7 @@
                 timer: result.Result ? '2000' : undefined,
                 showConfirmButton: !result.Result,
                 backdrop: !result.Result,
+                onClose: () => { if( reload ) location.reload(); }
             } );
         }
     </script>
