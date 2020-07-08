@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiProxy.Migrations
 {
     [DbContext(typeof(ApiProxyContext))]
-    [Migration("20200707082205_InitialCreate")]
+    [Migration("20200708071649_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,11 +57,37 @@ namespace ApiProxy.Migrations
                     b.ToTable("AskApiKeys");
                 });
 
+            modelBuilder.Entity("ApiProxy.Areas.DB.Models.AskUrlReference", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApiKey")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("UrlReferenceDescription")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("UrlReferenceID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("AskUrlReferences");
+                });
+
             modelBuilder.Entity("ApiProxy.Areas.DB.Models.UrlReference", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FromUrl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");

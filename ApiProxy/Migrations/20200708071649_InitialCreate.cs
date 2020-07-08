@@ -32,6 +32,22 @@ namespace ApiProxy.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AskUrlReferences",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserEmail = table.Column<string>(nullable: true),
+                    ApiKey = table.Column<string>(nullable: true),
+                    UrlReferenceID = table.Column<int>(nullable: false),
+                    UrlReferenceDescription = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AskUrlReferences", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -77,7 +93,8 @@ namespace ApiProxy.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FromUrl = table.Column<string>(nullable: true),
-                    ToUrl = table.Column<string>(nullable: true)
+                    ToUrl = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -290,6 +307,9 @@ namespace ApiProxy.Migrations
 
             migrationBuilder.DropTable(
                 name: "AskApiKeys");
+
+            migrationBuilder.DropTable(
+                name: "AskUrlReferences");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
