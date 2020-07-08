@@ -82,11 +82,17 @@ namespace ApiProxy.Areas.DB.Controllers
             {
                 string requestData = await Request.GetRawBodyStringAsync( Encoding.UTF8 );
                 List<ApiWithUrl> list_ApiWithUrl = JsonSerializer.Deserialize<List<ApiWithUrl>>( requestData );
+                
                 ApiKeyInfo apiKeyInfo = _apiProxyContext.ApiKeyInfos.Include( a => a.ApiWithUrls ).SingleOrDefault( a => a.UserEmail == list_ApiWithUrl.First().UserEmail );
                 if( apiKeyInfo != null )
                 {
                     _apiProxyContext.ApiWithUrls.RemoveRange( apiKeyInfo.ApiWithUrls );
-                    _apiProxyContext.ApiWithUrls.AddRange( list_ApiWithUrl );
+
+                    if( list_ApiWithUrl.Count == 1 && list_ApiWithUrl[0].UrlReferenceID != -1 )
+                    {
+                        _apiProxyContext.ApiWithUrls.AddRange( list_ApiWithUrl );
+                    }
+                    
                     await _apiProxyContext.SaveChangesAsync();
                     return Ok( new Status { Result = true, Message = "UpdateApiWithUrl 成功" } );
                 }

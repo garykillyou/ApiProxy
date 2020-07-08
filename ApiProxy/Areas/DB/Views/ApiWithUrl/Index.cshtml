@@ -140,6 +140,11 @@
                 let UrlReferenceID = parseInt( el.getAttribute( 'urlID' ) );
                 if( el.checked ) list_ApiWithUrl.push( { UserEmail, UrlReferenceID  } );
             } );
+
+            if( list_ApiWithUrl.length == 0 ) {
+                list_ApiWithUrl.push( { UserEmail, UrlReferenceID: -1 } );
+            }
+
             fetch( '@Url.Action("UpdateApiWithUrl","ApiWithUrl")', {
                 method: 'POST',
                 body: JSON.stringify(list_ApiWithUrl)

@@ -145,28 +145,38 @@
 </div>
 
 @section Scripts{
-    @if( ApiKeyInfo == null )
-    {
-        <script>
-            function AskApiKey() {
-                let data = { UserEmail: '@Email' };
+    <script>
+        function AskApiKey() {
+            let data = { UserEmail: '@Email' };
 
-                fetch( '@Url.Action( "AskApiKey", "MyApiWithUrl" )', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify( data )
-                } ).then( response => {
-                    return response.json();
-                } ).then( result => {
-                    ShowStatusDialog( result );
-                } );
-            }
-        </script>
-    }
-    else
+            fetch( '@Url.Action( "AskApiKey", "MyApiWithUrl" )', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( data )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function ShowStatusDialog( result, reload = false ) {
+            Swal.fire( {
+                icon: result.Result ? 'success' : 'error',
+                text: result.Message,
+                position: result.Result ? 'top-end' : 'center',
+                timer: result.Result ? '2000' : undefined,
+                showConfirmButton: !result.Result,
+                backdrop: !result.Result,
+                onClose: () => { if( reload ) location.reload(); }
+            } );
+        }
+    </script>
+
+    @if( ApiKeyInfo != null )
     {
         <script>
             window.onload = function () {
@@ -238,18 +248,6 @@
                     return response.json();
                 } ).then( result => {
                     ShowStatusDialog( result, true );
-                } );
-            }
-
-            function ShowStatusDialog( result, reload = false ) {
-                Swal.fire( {
-                    icon: result.Result ? 'success' : 'error',
-                    text: result.Message,
-                    position: result.Result ? 'top-end' : 'center',
-                    timer: result.Result ? '2000' : undefined,
-                    showConfirmButton: !result.Result,
-                    backdrop: !result.Result,
-                    onClose: () => { if( reload ) location.reload(); }
                 } );
             }
         </script>

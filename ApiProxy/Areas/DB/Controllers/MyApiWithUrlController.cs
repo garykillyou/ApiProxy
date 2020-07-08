@@ -46,7 +46,8 @@ namespace ApiProxy.Areas.DB.Controllers
             List<UrlReference> UrlReferences = ApiKeyInfo?.ApiWithUrls.Select( a => a.UrlReference ).OrderBy( u => u.ID ).ToList();
             ViewBag.UrlReferences = UrlReferences;
 
-            ViewBag.UnUrlReferences = _apiProxyContext.UrlReferences.AsNoTracking().Where( u => !UrlReferences.Contains( u ) ).ToList();
+            if( UrlReferences != null )
+                ViewBag.UnUrlReferences = _apiProxyContext.UrlReferences.AsNoTracking().Where( u => !UrlReferences.Contains( u ) ).ToList();
 
             return View();
         }
