@@ -1,4 +1,9 @@
-﻿@model List<ApiProxy.Areas.DB.Models.UrlReference>
+﻿@using ApiProxy.Areas.DB.Models
+@model List<UrlReference>
+@{
+    List<AskUrlReference> AskUrlReferences = ViewBag.AskUrlReferences;
+}
+
 @section Styles {
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/solid.min.css" />
@@ -9,53 +14,106 @@
         }
 
         #input_FromUrl, #input_ToUrl {
-            width: 395px;
+            width: 408px;
         }
     </style>
 }
-<div class="card">
-    <div class="card-header">
-        <div class="row justify-content-between">
-            <div class="col-auto align-self-center">UrlReference</div>
-            <div class="col-auto">
-                <div class="row no-gutters">
-                    <div class="col-auto mr-1">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="input_FromUrl" placeholder="FromUrl" />
-                            <div class="mx-1" style="display: inline-flex; align-items: center;">
-                                <i class="fas fa-arrow-right fa-lg"></i>
+
+<div class="row">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-2 align-self-center">UrlReference</div>
+                    <div class="col-10">
+                        <div class="row no-gutters justify-content-between">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="input_FromUrl" placeholder="FromUrl" />
+                                    <div class="mx-1" style="display: inline-flex; align-items: center;">
+                                        <i class="fas fa-arrow-right fa-lg"></i>
+                                    </div>
+                                    <input type="text" class="form-control" id="input_ToUrl" placeholder="ToUrl" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" onclick="AddUrlReference()">新增</button>
+                                    </div>
+                                </div>
                             </div>
-                            <input type="text" class="form-control" id="input_ToUrl" placeholder="ToUrl" />
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" onclick="AddUrlReference()">新增</button>
+                            <div class="col-auto"><button class="btn btn-danger" onclick="RemoveUrlReference()">刪除</button></div>
+                            <div class="col-12 mt-1">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Description</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="input_Description">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-warning" onclick="UpdateUrlReference()">編輯</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-auto"><button class="btn btn-danger" onclick="RemoveUrlReference()">刪除</button></div>
                 </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 4%;">ID</th>
+                            <th style="width: 32%;">FromUrl</th>
+                            <th style="width: 32%;">ToUrl</th>
+                            <th style="width: 32%;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="UrlReferences">
+                        @foreach( var item in Model )
+                        {
+                            <tr>
+                                <td class="ID" style="width: 4%;">@item.ID</td>
+                                <td class="FromUrl" style="width: 32%;">@item.FromUrl</td>
+                                <td class="ToUrl" style="width: 32%;">@item.ToUrl</td>
+                                <td style="width: 32%;">@item.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <div class="card-body">
-        <table class="table table-bordered w-100">
-            <thead class="thead-dark">
-                <tr>
-                    <th style="width: 10%;">ID</th>
-                    <th style="width: 45%;">FromUrl</th>
-                    <th style="width: 45%;">ToUrl</th>
-                </tr>
-            </thead>
-            <tbody id="UrlReferences">
-                @foreach( var item in Model )
-                {
-                    <tr>
-                        <td class="ID" style="width: 10%;">@item.ID</td>
-                        <td style="width: 45%;">@item.FromUrl</td>
-                        <td style="width: 45%;">@item.ToUrl</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-auto align-self-center">AskUrlReference</div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary" onclick="AcceptAskUrlReference()">允許</button>
+                        <button class="btn btn-danger" onclick="RefuseAskUrlReference()">拒絕</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 36%;">UserEmail</th>
+                            <th style="width: 4%;">Url_ID</th>
+                            <th style="width: 60%;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="AskUrlReferences">
+                        @foreach( AskUrlReference item in AskUrlReferences )
+                        {
+                            <tr>
+                                <td class="ID d-none" name="@item.ID" style="width: 36%;">@item.ID</td>
+                                <td style="width: 36%;">@item.UserEmail</td>
+                                <td style="width: 4%;">@item.UrlReferenceID</td>
+                                <td style="width: 60%;">@item.UrlReferenceDescription</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -65,20 +123,31 @@
             document.querySelectorAll( '#UrlReferences tr' ).forEach( el => {
                 el.onclick = function () {
                     el.classList.toggle( 'active' );
+                    document.getElementById( 'input_FromUrl' ).value = el.querySelector( '.FromUrl' ).textContent;
+                    document.getElementById( 'input_ToUrl' ).value = el.querySelector( '.ToUrl' ).textContent;
+                    document.getElementById( 'input_Description' ).value = el.querySelector( '.Description' ).textContent;
+                }
+            } );
+
+            document.querySelectorAll( '#AskUrlReferences tr' ).forEach( el => {
+                el.onclick = function () {
+                    el.classList.toggle( 'active' );
                 }
             } );
         };
 
         function AddUrlReference() {
-            let input_FromUrl = document.getElementById( 'input_FromUrl' ).value;
-            let input_ToUrl = document.getElementById( 'input_ToUrl' ).value;
+            let FromUrl = document.getElementById( 'input_FromUrl' ).value;
+            let ToUrl = document.getElementById( 'input_ToUrl' ).value;
+            let Description = document.getElementById( 'input_Description' ).value;
+
             if( input_FromUrl == '' || input_ToUrl == '' )
                 return Swal.fire( {
                     icon: 'warning',
                     text: '請輸入想要新增的FromUrl和ToUrl'
                 } );
 
-            let data = { FromUrl: input_FromUrl, ToUrl: input_ToUrl };
+            let data = { FromUrl, ToUrl, Description };
 
             fetch( '@Url.Action("AddUrlReference","UrlReference")', {
                 method: 'POST',
@@ -96,7 +165,7 @@
 
         function RemoveUrlReference() {
             let userEmail = document.querySelectorAll( '#UrlReferences tr.active td.ID' );
-            if( userEmail === null )
+            if( userEmail.length === 0 )
                 return Swal.fire( {
                     icon: 'warning',
                     text: '請先選擇想要刪除的UrlReference'
@@ -120,6 +189,91 @@
             } ).then( result => {
                 ShowStatusDialog( result );
             } );
+        }
+
+        function UpdateUrlReference() {
+            let FromUrl = document.getElementById( 'input_FromUrl' ).value;
+            let ToUrl = document.getElementById( 'input_ToUrl' ).value;
+            let Description = document.getElementById( 'input_Description' ).value;
+
+            if( input_FromUrl == '' || input_ToUrl == '' )
+                return Swal.fire( {
+                    icon: 'warning',
+                    text: '請輸入想要新增的FromUrl和ToUrl'
+                } );
+
+            let data = { FromUrl, ToUrl, Description };
+
+            fetch( '@Url.Action( "UpdateUrlReference", "UrlReference")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( data )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+        }
+
+        function AcceptAskUrlReference() {
+            let AskUrlReferences = document.querySelectorAll( '#AskUrlReferences tr.active td.ID' );
+            if( AskUrlReferences.length === 0 )
+                return Swal.fire( {
+                    icon: 'warning',
+                    text: '請先選擇想要允許的AskUrlReference'
+                } );
+
+            let list_ID = []
+
+            AskUrlReferences.forEach( el => {
+                list_ID.push( parseInt( el.getAttribute('name') ) );
+            } );
+
+            fetch( '@Url.Action( "AcceptAskUrlReference", "UrlReference")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( list_ID )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+
+        }
+
+        function RefuseAskUrlReference() {
+            let AskUrlReferences = document.querySelectorAll( '#AskUrlReferences tr.active td.ID' );
+            if( AskUrlReferences.length === 0 )
+                return Swal.fire( {
+                    icon: 'warning',
+                    text: '請先選擇想要拒絕的AskUrlReference'
+                } );
+
+            let list_ID = []
+
+            AskUrlReferences.forEach( el => {
+                list_ID.push( parseInt( el.getAttribute( 'name' ) ) );
+            } );
+
+            fetch( '@Url.Action( "RefuseAskUrlReference", "UrlReference")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify( list_ID )
+            } ).then( response => {
+                return response.json();
+            } ).then( result => {
+                ShowStatusDialog( result );
+            } );
+
         }
 
         function ShowStatusDialog( result ) {

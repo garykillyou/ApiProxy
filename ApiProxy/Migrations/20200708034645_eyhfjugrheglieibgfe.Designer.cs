@@ -3,14 +3,16 @@ using System;
 using ApiProxy.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiProxy.Migrations
 {
     [DbContext(typeof(ApiProxyContext))]
-    partial class ApiProxyContextModelSnapshot : ModelSnapshot
+    [Migration("20200708034645_eyhfjugrheglieibgfe")]
+    partial class eyhfjugrheglieibgfe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,9 +64,6 @@ namespace ApiProxy.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ApiKey")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("UrlReferenceDescription")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("UrlReferenceID")

@@ -43,7 +43,10 @@ namespace ApiProxy.Areas.DB.Controllers
                 .ThenInclude( au => au.UrlReference ).SingleOrDefault( a => a.UserEmail == user.Email );
             ViewBag.ApiKeyInfo = ApiKeyInfo;
 
-            ViewBag.UrlReferences = ApiKeyInfo?.ApiWithUrls.Select( a => a.UrlReference ).OrderBy( u => u.ID ).ToList();
+            List<UrlReference> UrlReferences = ApiKeyInfo?.ApiWithUrls.Select( a => a.UrlReference ).OrderBy( u => u.ID ).ToList();
+            ViewBag.UrlReferences = UrlReferences;
+
+            ViewBag.UnUrlReferences = _apiProxyContext.UrlReferences.AsNoTracking().Where( u => !UrlReferences.Contains( u ) ).ToList();
 
             return View();
         }
@@ -118,14 +121,33 @@ namespace ApiProxy.Areas.DB.Controllers
             try
             {
                 string requestData = await Request.GetRawBodyStringAsync( Encoding.UTF8 );
-                List<int> list_ID = JsonSerializer.Deserialize<List<int>>( requestData );
-                var tmp = _apiProxyContext.UrlReferences.Where( a => list_ID.Contains( a.ID ) );
-                if( tmp != null )
-                {
-                    _apiProxyContext.UrlReferences.RemoveRange( tmp );
-                    await _apiProxyContext.SaveChangesAsync();
-                }
+                List<ApiWithUrl> list_ApiWithUrl = JsonSerializer.Deserialize<List<ApiWithUrl>>( requestData );
+
+                _apiProxyContext.ApiWithUrls.RemoveRange( list_ApiWithUrl );
+                await _apiProxyContext.SaveChangesAsync();
+
                 return Ok( new Status { Result = true, Message = "RemoveUrlReference 成功" } );
+            }
+            catch( Exception ex )
+            {
+                _logger.LogError( "RemoveUrlReference()", ex );
+                return BadRequest( new Status { Result = false, Message = ex.InnerException?.Message ?? ex.Message } );
+            }
+        }
+
+        // POST: DB/MyApiWithUrl/RemoveUrlReference
+        [HttpPost]
+        public async Task<IActionResult> AskUrlReference()
+        {
+            try
+            {
+                string requestData = await Request.GetRawBodyStringAsync( Encoding.UTF8 );
+                List<AskUrlReference> list_AskUrlReference = JsonSerializer.Deserialize<List<AskUrlReference>>( requestData );
+
+                _apiProxyContext.AskUrlReferences.AddRange( list_AskUrlReference );
+                await _apiProxyContext.SaveChangesAsync();
+
+                return Ok( new Status { Result = true, Message = "AskUrlReference 成功" } );
             }
             catch( Exception ex )
             {

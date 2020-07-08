@@ -3,6 +3,7 @@
     string Email = ViewBag.Email;
     ApiKeyInfo ApiKeyInfo = ViewBag.ApiKeyInfo;
     List<UrlReference> UrlReferences = ViewBag.UrlReferences;
+    List<UrlReference> UnUrlReferences = ViewBag.UnUrlReferences;
 }
 
 @section Styles {
@@ -64,30 +65,14 @@
                 </table>
             </div>
         </div>
-    </div>
-    <div class="col-7">
-        <div class="card">
+        <div class="card mt-1">
             <div class="card-header">
                 <div class="row justify-content-between">
-                    <div class="col-auto align-self-center">UrlReference</div>
+                    <div class="col-auto align-self-center">可以使用的 UrlReference</div>
                     @if( ApiKeyInfo != null )
                     {
                         <div class="col-auto">
-                            <div class="row no-gutters">
-                                <div class="col-auto mr-1">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="input_FromUrl" placeholder="FromUrl" />
-                                        <div class="mx-1" style="display: inline-flex; align-items: center;">
-                                            <i class="fas fa-arrow-right fa-lg"></i>
-                                        </div>
-                                        <input type="text" class="form-control" id="input_ToUrl" placeholder="ToUrl" />
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" onclick="AddUrlReference()">新增</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-auto"><button class="btn btn-danger" onclick="RemoveUrlReference()">刪除</button></div>
-                            </div>
+                            <button class="btn btn-danger" onclick="RemoveUrlReference()">刪除</button>
                         </div>
                     }
                 </div>
@@ -98,7 +83,7 @@
                         <tr>
                             <th style="width: 10%;">ID</th>
                             <th style="width: 45%;">FromUrl（不區分大小寫）</th>
-                            <th style="width: 45%;">ToUrl</th>
+                            <th style="width: 45%;">Description</th>
                         </tr>
                     </thead>
                     <tbody id="UrlReferences">
@@ -109,7 +94,46 @@
                                 <tr>
                                     <td class="ID" style="width: 10%;">@item.ID</td>
                                     <td style="width: 45%;">@item.FromUrl</td>
-                                    <td style="width: 45%;">@item.ToUrl</td>
+                                    <td style="width: 45%;">@item.Description</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-7">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-auto align-self-center">可以請求的 UrlReference</div>
+                    @if( ApiKeyInfo != null )
+                    {
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="AskUrlReference()">請求</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered w-100">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 45%;">FromUrl（不區分大小寫）</th>
+                            <th style="width: 45%;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="UnUrlReferences">
+                        @if( UnUrlReferences != null )
+                        {
+                            foreach( UrlReference item in UnUrlReferences )
+                            {
+                                <tr>
+                                    <td class="ID" style="width: 10%;">@item.ID</td>
+                                    <td style="width: 45%;">@item.FromUrl</td>
+                                    <td style="width: 45%;">@item.Description</td>
                                 </tr>
                             }
                         }
@@ -121,101 +145,113 @@
 </div>
 
 @section Scripts{
-    <script>
-        window.onload = function () {
-            document.querySelectorAll( '#UrlReferences tr' ).forEach( el => {
-                el.onclick = function () {
-                    el.classList.toggle( 'active' );
-                }
-            } );
-        };
+    @if( ApiKeyInfo == null )
+    {
+        <script>
+            function AskApiKey() {
+                let data = { UserEmail: '@Email' };
 
-        function AskApiKey() {
-            let data = { UserEmail: '@Email' };
-
-            fetch( '@Url.Action( "AskApiKey", "MyApiWithUrl" )', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify( data )
-            } ).then( response => {
-                return response.json();
-            } ).then( result => {
-                ShowStatusDialog( result );
-            } );
-        }
-
-        function AddUrlReference() {
-            let input_FromUrl = document.getElementById( 'input_FromUrl' ).value;
-            let input_ToUrl = document.getElementById( 'input_ToUrl' ).value;
-            if( input_FromUrl == '' || input_ToUrl == '' )
-                return Swal.fire( {
-                    icon: 'warning',
-                    text: '請輸入想要新增的FromUrl和ToUrl'
+                fetch( '@Url.Action( "AskApiKey", "MyApiWithUrl" )', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify( data )
+                } ).then( response => {
+                    return response.json();
+                } ).then( result => {
+                    ShowStatusDialog( result );
                 } );
-
-            let data = {
-                UserEmail: document.getElementById( 'UserEmail' ).textContent,
-                UrlReference: {
-                    FromUrl: input_FromUrl,
-                    ToUrl: input_ToUrl
-                }
+            }
+        </script>
+    }
+    else
+    {
+        <script>
+            window.onload = function () {
+                document.querySelectorAll( '#UrlReferences tr, #UnUrlReferences tr' ).forEach( el => {
+                    el.onclick = function () {
+                        el.classList.toggle( 'active' );
+                    }
+                } );
             };
 
-            fetch( '@Url.Action("AddUrlReference", "MyApiWithUrl" )', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify( data )
-            } ).then( response => {
-                return response.json();
-            } ).then( result => {
-                ShowStatusDialog( result, true );
-            } );
-        }
+            function RemoveUrlReference() {
+                let UserEmail = '@ApiKeyInfo.UserEmail';
+                let urlReferences = document.querySelectorAll( '#UrlReferences tr.active td.ID' );
+                if( urlReferences.length === 0 )
+                    return Swal.fire( {
+                        icon: 'warning',
+                        text: '請先選擇想要刪除的UrlReference'
+                    } );
 
-        function RemoveUrlReference() {
-            let userEmail = document.querySelectorAll( '#UrlReferences tr.active td.ID' );
-            if( userEmail.length === 0 )
-                return Swal.fire( {
-                    icon: 'warning',
-                    text: '請先選擇想要刪除的UrlReference'
+                let list_ApiWithUrl = []
+
+                urlReferences.forEach( el => {
+                    list_ApiWithUrl.push( {
+                        UserEmail,
+                        UrlReferenceID: parseInt( el.textContent )
+                    } );
                 } );
 
-            let list_ID = []
+                fetch( '@Url.Action( "RemoveUrlReference", "MyApiWithUrl" )', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify( list_ApiWithUrl )
+                } ).then( response => {
+                    return response.json();
+                } ).then( result => {
+                    ShowStatusDialog( result, true );
+                } );
+            }
 
-            userEmail.forEach( el => {
-                list_ID.push( parseInt( el.textContent ) );
-            } );
+            function AskUrlReference() {
+                let UnUrlReferences = document.querySelectorAll( '#UnUrlReferences tr.active td.ID' );
+                if( UnUrlReferences.length === 0 )
+                    return Swal.fire( {
+                        icon: 'warning',
+                        text: '請先選擇想要請求的UrlReference'
+                    } );
 
-            fetch( '@Url.Action("RemoveUrlReference", "MyApiWithUrl" )', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify( list_ID )
-            } ).then( response => {
-                return response.json();
-            } ).then( result => {
-                ShowStatusDialog( result, true );
-            } );
-        }
+                let list_AskUrlReference = []
 
-        function ShowStatusDialog( result, reload = false ) {
-            Swal.fire( {
-                icon: result.Result ? 'success' : 'error',
-                text: result.Message,
-                position: result.Result ? 'top-end' : 'center',
-                timer: result.Result ? '2000' : undefined,
-                showConfirmButton: !result.Result,
-                backdrop: !result.Result,
-                onClose: () => { if( reload ) location.reload(); }
-            } );
-        }
-    </script>
+                UnUrlReferences.forEach( el => {
+                    list_AskUrlReference.push( {
+                        UserEmail: '@ApiKeyInfo.UserEmail',
+                        ApiKey: '@ApiKeyInfo.ApiKey',
+                        UrlReferenceID: parseInt( el.textContent )
+                    } );
+                } );
+
+                fetch( '@Url.Action( "AskUrlReference", "MyApiWithUrl" )', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify( list_AskUrlReference )
+                } ).then( response => {
+                    return response.json();
+                } ).then( result => {
+                    ShowStatusDialog( result, true );
+                } );
+            }
+
+            function ShowStatusDialog( result, reload = false ) {
+                Swal.fire( {
+                    icon: result.Result ? 'success' : 'error',
+                    text: result.Message,
+                    position: result.Result ? 'top-end' : 'center',
+                    timer: result.Result ? '2000' : undefined,
+                    showConfirmButton: !result.Result,
+                    backdrop: !result.Result,
+                    onClose: () => { if( reload ) location.reload(); }
+                } );
+            }
+        </script>
+    }
 }

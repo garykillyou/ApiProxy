@@ -3,14 +3,16 @@ using System;
 using ApiProxy.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiProxy.Migrations
 {
     [DbContext(typeof(ApiProxyContext))]
-    partial class ApiProxyContextModelSnapshot : ModelSnapshot
+    [Migration("20200708025843_eyhfjugrhegli")]
+    partial class eyhfjugrhegli
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,29 +55,6 @@ namespace ApiProxy.Migrations
                     b.HasKey("UserEmail");
 
                     b.ToTable("AskApiKeys");
-                });
-
-            modelBuilder.Entity("ApiProxy.Areas.DB.Models.AskUrlReference", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApiKey")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("UrlReferenceDescription")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<int>("UrlReferenceID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("AskUrlReferences");
                 });
 
             modelBuilder.Entity("ApiProxy.Areas.DB.Models.UrlReference", b =>
